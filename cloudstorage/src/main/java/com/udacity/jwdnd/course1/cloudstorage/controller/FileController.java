@@ -1,6 +1,7 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.CredentialForm;
+import com.udacity.jwdnd.course1.cloudstorage.model.File;
 import com.udacity.jwdnd.course1.cloudstorage.model.FileForm;
 import com.udacity.jwdnd.course1.cloudstorage.model.NoteForm;
 import com.udacity.jwdnd.course1.cloudstorage.services.*;
@@ -18,16 +19,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Controller
 public class FileController {
     private CredentialService credentialService;
+    private ErrorService errorService;
     private NoteService noteService;
     private FileService fileService;
     private EncryptionService encryptionService;
     private UserService userService;
 
-    public FileController(CredentialService credentialService, NoteService noteService, FileService fileService, EncryptionService encryptionService, UserService userService){
+    public FileController(CredentialService credentialService, ErrorService errorService, NoteService noteService, FileService fileService, EncryptionService encryptionService, UserService userService){
         this.credentialService = credentialService;
+        this.errorService = errorService;
         this.noteService = noteService;
         this.fileService = fileService;
         this.encryptionService = encryptionService;
@@ -35,11 +40,19 @@ public class FileController {
     }
 
     @PostMapping("/files")
-    public String addFile(@RequestParam("fileUpload") MultipartFile file, Authentication authentication, CredentialForm credentialForm, NoteForm noteForm, FileForm fileForm, Model model) {
+    public String addFile(@RequestParam("fileUpload") MultipartFile file, Authentication authentication, ErrorService errorService, CredentialForm credentialForm, NoteForm noteForm, FileForm fileForm, Model model) {
         // Get the current logged in user details
         this.fileService.trackLoggedInUserId(authentication.getName());
 
+        //error check filename
         String filename = StringUtils.getFilename(file.getOriginalFilename());
+        if (filename.trim().equals("")){
+            return error("Cannot upload an empty file", model);
+        }
+        else if (this.fileService.compareFilename(filename)){
+            return error("A file with the same name exists in the database", model);
+        }
+
         fileForm.setFilename(filename);
         fileForm.setFileType(file.getContentType());
         fileForm.setFileSize("" + file.getSize());
@@ -52,8 +65,19 @@ public class FileController {
         this.fileService.uploadFile(fileForm);
 
         HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
+        error("", model);
+        return "result";
+    }
 
-        return "home";
+    @PostMapping("result")
+    public String error(String error, Model model){
+        if (error.equals("")){
+            this.errorService.uploadSuccess();
+        } else{
+            this.errorService.setErrorMsg(error);
+        }
+        model.addAttribute("error", this.errorService.getError());
+        return "result";
     }
 
     @GetMapping("/download")
@@ -72,10 +96,15 @@ public class FileController {
     public String deleteFile(@PathVariable("fileid") Integer fileId, Authentication authentication, CredentialForm credentialForm, NoteForm noteForm, FileForm fileForm, Model model){
         System.out.println("fileid" + fileId);
         this.fileService.deleteFile(fileId);
+        for (File file : this.fileService.getAllFiles()){
+            if (fileId.equals(file.getFileId())){
+                error("File was not deleted", model);
+            }
+        }
 
         HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
 
-        return "home";
+        return error("", model);
     }
 
 }

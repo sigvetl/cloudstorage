@@ -41,6 +41,17 @@ public class FileService {
         this.fileMapper.deleteFile(fileId);
     }
 
+    public boolean compareFilename(String filename){
+        if (this.getAllFiles().size() > 0){
+            for (File file : this.getAllFiles()){
+                if (file.getFilename().equals(filename)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public File getFile(String filename){
         return this.fileMapper.getFile(filename, this.userId);
     }
