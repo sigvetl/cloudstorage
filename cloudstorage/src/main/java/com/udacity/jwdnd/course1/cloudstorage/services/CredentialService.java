@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+//TODO create function to encrypt and decrypt password
+
 @Service
 public class CredentialService {
     private CredentialMapper credentialMapper;
@@ -53,15 +55,15 @@ public class CredentialService {
         } else{
             return false;
         }
-        /*
-        for (Credential c : this.getAllCredentials()) {
-            if (c.getUsername().equals(credential.getUsername())) {
+    }
+
+    public boolean compareUrl(String url){
+        for (Credential credential : this.getAllCredentials()){
+            if (credential.getUrl().equals(url)){
                 return true;
             }
         }
         return false;
-
-         */
     }
 
     public List<Credential> getAllCredentials(){

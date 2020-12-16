@@ -54,6 +54,15 @@ public class NoteService {
         }
     }
 
+    public boolean compareTitle(String title){
+        for (Note note : this.getNotes()){
+            if (note.getNoteTitle().equals(title)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public List<Note> getNotes() {
         return noteMapper.getNotes(this.userId);
     }

@@ -29,14 +29,21 @@ public class FileController {
     private FileService fileService;
     private EncryptionService encryptionService;
     private UserService userService;
+    private ErrorController errorController;
 
-    public FileController(CredentialService credentialService, ErrorService errorService, NoteService noteService, FileService fileService, EncryptionService encryptionService, UserService userService){
+    //TODO remove print statements
+
+    public FileController(CredentialService credentialService, ErrorService errorService, NoteService noteService,
+                          FileService fileService, EncryptionService encryptionService, UserService userService,
+                          ErrorController errorController){
         this.credentialService = credentialService;
         this.errorService = errorService;
         this.noteService = noteService;
         this.fileService = fileService;
         this.encryptionService = encryptionService;
         this.userService = userService;
+        this.errorController = errorController;
+
     }
 
     @PostMapping("/files")
@@ -47,10 +54,10 @@ public class FileController {
         //error check filename
         String filename = StringUtils.getFilename(file.getOriginalFilename());
         if (filename.trim().equals("")){
-            return error("Cannot upload an empty file", model);
+            return this.errorController.error("Cannot upload an empty file", model);
         }
         else if (this.fileService.compareFilename(filename)){
-            return error("A file with the same name exists in the database", model);
+            return this.errorController.error("A file with the same name exists in the database", model);
         }
 
         fileForm.setFilename(filename);
@@ -65,20 +72,9 @@ public class FileController {
         this.fileService.uploadFile(fileForm);
 
         HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
-        error("", model);
-        return "result";
+        return this.errorController.error("", model);
     }
 
-    @PostMapping("result")
-    public String error(String error, Model model){
-        if (error.equals("")){
-            this.errorService.uploadSuccess();
-        } else{
-            this.errorService.setErrorMsg(error);
-        }
-        model.addAttribute("error", this.errorService.getError());
-        return "result";
-    }
 
     @GetMapping("/download")
     public ResponseEntity<ByteArrayResource> downloadFile(@RequestParam String filename, Authentication authentication, FileForm fileForm, Model model){
@@ -98,13 +94,13 @@ public class FileController {
         this.fileService.deleteFile(fileId);
         for (File file : this.fileService.getAllFiles()){
             if (fileId.equals(file.getFileId())){
-                error("File was not deleted", model);
+                this.errorController.error("File was not deleted", model);
             }
         }
 
         HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
 
-        return error("", model);
+        return this.errorController.error("", model);
     }
 
 }

@@ -42,11 +42,9 @@ public class FileService {
     }
 
     public boolean compareFilename(String filename){
-        if (this.getAllFiles().size() > 0){
-            for (File file : this.getAllFiles()){
-                if (file.getFilename().equals(filename)){
-                    return true;
-                }
+        for (File file : this.getAllFiles()){
+            if (file.getFilename().equals(filename)){
+                return true;
             }
         }
         return false;

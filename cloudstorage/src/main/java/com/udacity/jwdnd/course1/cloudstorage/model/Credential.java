@@ -4,8 +4,17 @@ public class Credential {
     private Integer credentialId;
     private String url;
     private String username;
+    private String key;
     private String password;
     private Integer userId;
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public Integer getCredentialId() {
         return credentialId;

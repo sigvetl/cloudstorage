@@ -2,6 +2,7 @@ package com.udacity.jwdnd.course1.cloudstorage.controller;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.CredentialForm;
 import com.udacity.jwdnd.course1.cloudstorage.model.FileForm;
+import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 import com.udacity.jwdnd.course1.cloudstorage.model.NoteForm;
 import com.udacity.jwdnd.course1.cloudstorage.services.*;
 import org.springframework.security.core.Authentication;
@@ -18,43 +19,51 @@ public class NoteController {
     private FileService fileService;
     private EncryptionService encryptionService;
     private UserService userService;
+    private ErrorController errorController;
 
-    public NoteController(CredentialService credentialService, NoteService noteService, FileService fileService, EncryptionService encryptionService, UserService userService) {
+    public NoteController(CredentialService credentialService, NoteService noteService, FileService fileService,
+                          EncryptionService encryptionService, UserService userService, ErrorController errorController) {
         this.credentialService = credentialService;
         this.noteService = noteService;
         this.fileService = fileService;
         this.encryptionService = encryptionService;
         this.userService = userService;
+        this.errorController = errorController;
     }
 
     @PostMapping("/notes")
-    public String addUpdateNotes(Authentication authentication, NoteForm noteForm, CredentialForm credentialForm, FileForm fileForm, Model model) {
-        // Check if data exists in database already
-        // We use this to update our data by searching
-        // for our unique id.
-        //String success = null;
+    public String addUpdateNotes(Authentication authentication, NoteForm noteForm, CredentialForm credentialForm,
+                                 FileForm fileForm, Model model) {
 
         if(this.noteService.doesNoteExist(noteForm)) {
             this.noteService.updateNote(noteForm);
-            //success = "Note " + noteForm.getNoteTitle() + " was modified successfully!";
         } else {
             this.noteService.trackLoggedInUserId(authentication.getName());
             this.noteService.createNote(noteForm);
-            //success = "Note: " + noteForm.getNoteTitle() + " was created successfully!";
         }
 
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
-        //model.addAttribute("success", success);
-
-        return "home";
+        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService,
+                this.fileService, this.encryptionService, this.userService);
+        if (this.noteService.compareTitle(noteForm.getNoteTitle())){
+            return this.errorController.error("", model);
+        } else{
+            return this.errorController.error("There was an error uploading the note", model);
+        }
     }
 
     @GetMapping("/notes/delete/{noteid}")
-    public String deleteNotes(@PathVariable("noteid") Integer noteId, Authentication authentication, NoteForm noteForm, CredentialForm credentialForm, FileForm fileForm, Model model) {
+    public String deleteNotes(@PathVariable("noteid") Integer noteId, Authentication authentication, NoteForm noteForm,
+                              CredentialForm credentialForm, FileForm fileForm, Model model) {
         this.noteService.deleteNote(noteId);
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
-        //model.addAttribute("success", "Note was deleted successfully.");
+        for (Note note : this.noteService.getNotes()){
+            if (note.getNoteId().equals(noteId)){
+                return this.errorController.error("The note was not deleted", model);
+            }
+        }
 
-        return "home";
+        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService,
+                this.fileService, this.encryptionService, this.userService);
+
+        return this.errorController.error("", model);
     }
 }
