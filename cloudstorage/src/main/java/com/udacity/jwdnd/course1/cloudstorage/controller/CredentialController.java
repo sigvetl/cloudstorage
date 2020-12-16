@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class CredentialController {
-
     private CredentialService credentialService;
     private ErrorService errorService;
     private NoteService noteService;
@@ -32,11 +31,9 @@ public class CredentialController {
         this.errorController = errorController;
     }
 
-    //TODO implement encryption of password
-
     @PostMapping("/credentials")
     public String addUpdateCredential(Authentication authentication, CredentialForm credentialForm,
-                                      NoteForm noteForm, Model model) {
+                                      NoteForm noteForm, FileForm fileForm, Model model) {
 
         // Get the current logged in user details
         this.credentialService.trackLoggedInUserId(authentication.getName());
@@ -48,6 +45,7 @@ public class CredentialController {
         }
         HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService,
                 this.fileService, this.encryptionService, this.userService);
+
 
         if (this.credentialService.compareUrl(credentialForm.getUrl())){
             return this.errorController.error("", model);

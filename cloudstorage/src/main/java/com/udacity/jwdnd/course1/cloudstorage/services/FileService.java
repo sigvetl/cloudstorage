@@ -27,17 +27,11 @@ public class FileService {
         file.setContentType(fileForm.getContentType());
         file.setFileSize(fileForm.getFileSize());
         file.setFileData(fileForm.getFileData());
-        System.out.println("userid: " + this.userId);
-        System.out.println("filename: " + fileForm.getFilename());
-        System.out.println("filetype: " + fileForm.getContentType());
-        System.out.println("filetype: " + file.getContentType());
-        System.out.println("filesize: " + fileForm.getFileSize());
 
         this.fileMapper.insertFile(file);
     }
 
     public void deleteFile(Integer fileId){
-        System.out.println(fileId);
         this.fileMapper.deleteFile(fileId);
     }
 

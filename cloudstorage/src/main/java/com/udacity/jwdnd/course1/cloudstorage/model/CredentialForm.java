@@ -4,16 +4,7 @@ public class CredentialForm {
     private Integer credentialId;
     private String url;
     private String username;
-    private String key;
     private String password;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     public String getUsername() {
         return username;

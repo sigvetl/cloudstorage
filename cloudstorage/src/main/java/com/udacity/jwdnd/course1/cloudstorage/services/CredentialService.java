@@ -5,38 +5,61 @@ import com.udacity.jwdnd.course1.cloudstorage.model.Credential;
 import com.udacity.jwdnd.course1.cloudstorage.model.CredentialForm;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.List;
-
-//TODO create function to encrypt and decrypt password
 
 @Service
 public class CredentialService {
     private CredentialMapper credentialMapper;
     private UserService userService;
+    private EncryptionService encryptionService;
     private Integer userId;
 
-    public CredentialService(CredentialMapper credentialMapper, UserService userService){
+    public CredentialService(CredentialMapper credentialMapper, UserService userService, EncryptionService encryptionService){
         this.credentialMapper = credentialMapper;
         this.userService = userService;
+        this.encryptionService = encryptionService;
         this.userId = null;
     }
 
+    public String getEncodedKey(){
+        SecureRandom random = new SecureRandom();
+        byte[] key = new byte[16];
+        random.nextBytes(key);
+        String encodedKey = Base64.getEncoder().encodeToString(key);
+        return encodedKey;
+    }
+
+    public String encryptedPassword(String password, String encodedKey){
+        String encryptedPassword = encryptionService.encryptValue(password, encodedKey);
+        return encryptedPassword;
+    }
+
     public void createCredential(CredentialForm credentialForm){
+        String encodedKey = getEncodedKey();
+        String encryptedPassword = encryptedPassword(credentialForm.getPassword(), encodedKey);
+
         Credential credential = new Credential();
         credential.setUrl(credentialForm.getUrl());
         credential.setUsername(credentialForm.getUsername());
-        credential.setPassword(credentialForm.getPassword());
+        credential.setKey(encodedKey);
+        credential.setPassword(encryptedPassword);
         credential.setUserId(this.userId);
 
         this.credentialMapper.insertCredential(credential);
     }
 
     public void updateCredential(CredentialForm credentialForm){
+        String encodedKey = getEncodedKey();
+        String encryptedPassword = encryptedPassword(credentialForm.getPassword(), encodedKey);
+
         Credential credential = new Credential();
         credential.setCredentialId(credentialForm.getCredentialId());
         credential.setUrl(credentialForm.getUrl());
         credential.setUsername(credentialForm.getUsername());
-        credential.setPassword(credentialForm.getPassword());
+        credential.setKey(encodedKey);
+        credential.setPassword(encryptedPassword);
 
         this.credentialMapper.updateCredential(credential);
     }
@@ -56,6 +79,11 @@ public class CredentialService {
             return false;
         }
     }
+
+//    public String decryptPassword(String encryptedPassword, String encodedKey){
+//        String decryptedPassword = encryptionService.decryptValue(encryptedPassword, encodedKey);
+//        return decryptedPassword;
+//    }
 
     public boolean compareUrl(String url){
         for (Credential credential : this.getAllCredentials()){

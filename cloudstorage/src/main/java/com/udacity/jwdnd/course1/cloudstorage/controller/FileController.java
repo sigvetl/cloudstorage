@@ -31,8 +31,6 @@ public class FileController {
     private UserService userService;
     private ErrorController errorController;
 
-    //TODO remove print statements
-
     public FileController(CredentialService credentialService, ErrorService errorService, NoteService noteService,
                           FileService fileService, EncryptionService encryptionService, UserService userService,
                           ErrorController errorController){
@@ -79,8 +77,6 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<ByteArrayResource> downloadFile(@RequestParam String filename, Authentication authentication, FileForm fileForm, Model model){
         this.fileService.trackLoggedInUserId(authentication.getName());
-        System.out.println("fileid " + this.fileService.getFile(filename).getFileId());
-        System.out.println("filetype " + this.fileService.getFile(filename).getContentType());
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(this.fileService.getFile(filename).getContentType()))
@@ -90,7 +86,6 @@ public class FileController {
 
     @GetMapping("/files/delete/{fileid}")
     public String deleteFile(@PathVariable("fileid") Integer fileId, Authentication authentication, CredentialForm credentialForm, NoteForm noteForm, FileForm fileForm, Model model){
-        System.out.println("fileid" + fileId);
         this.fileService.deleteFile(fileId);
         for (File file : this.fileService.getAllFiles()){
             if (fileId.equals(file.getFileId())){
