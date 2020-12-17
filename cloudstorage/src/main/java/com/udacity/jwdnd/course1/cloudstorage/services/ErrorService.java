@@ -2,7 +2,6 @@ package com.udacity.jwdnd.course1.cloudstorage.services;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.Error;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 @Service
 public class ErrorService {

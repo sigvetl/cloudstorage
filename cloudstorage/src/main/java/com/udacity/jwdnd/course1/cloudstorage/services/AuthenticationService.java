@@ -33,7 +33,6 @@ public class AuthenticationService implements AuthenticationProvider {
                 return new UsernamePasswordAuthenticationToken(username, password, new ArrayList<>());
             }
         }
-
         return null;
     }
 

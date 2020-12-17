@@ -80,11 +80,6 @@ public class CredentialService {
         }
     }
 
-//    public String decryptPassword(String encryptedPassword, String encodedKey){
-//        String decryptedPassword = encryptionService.decryptValue(encryptedPassword, encodedKey);
-//        return decryptedPassword;
-//    }
-
     public boolean compareUrl(String url){
         for (Credential credential : this.getAllCredentials()){
             if (credential.getUrl().equals(url)){

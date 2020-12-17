@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @Controller
 public class FileController {
@@ -64,7 +63,7 @@ public class FileController {
         try{
             fileForm.setFileData(file.getBytes());
         } catch(Exception e){
-            System.out.println("Error reading filedata");
+            System.out.println(e.getMessage());
         }
 
         this.fileService.uploadFile(fileForm);
@@ -92,7 +91,6 @@ public class FileController {
                 this.errorController.error("File was not deleted", model);
             }
         }
-
         HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
 
         return this.errorController.error("", model);
