@@ -68,13 +68,15 @@ public class FileController {
 
         this.fileService.uploadFile(fileForm);
 
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
+        HomeController.updateHomeView(authentication, model, this.credentialService, this.noteService, this.fileService,
+                this.encryptionService, this.userService);
         return this.errorController.error("", model);
     }
 
 
     @GetMapping("/download")
-    public ResponseEntity<ByteArrayResource> downloadFile(@RequestParam String filename, Authentication authentication, FileForm fileForm, Model model){
+    public ResponseEntity<ByteArrayResource> downloadFile(@RequestParam String filename, Authentication authentication,
+                                                          FileForm fileForm, Model model){
         this.fileService.trackLoggedInUserId(authentication.getName());
 
         return ResponseEntity.ok()
@@ -84,14 +86,16 @@ public class FileController {
     }
 
     @GetMapping("/files/delete/{fileid}")
-    public String deleteFile(@PathVariable("fileid") Integer fileId, Authentication authentication, CredentialForm credentialForm, NoteForm noteForm, FileForm fileForm, Model model){
+    public String deleteFile(@PathVariable("fileid") Integer fileId, Authentication authentication,
+                             CredentialForm credentialForm, NoteForm noteForm, FileForm fileForm, Model model){
         this.fileService.deleteFile(fileId);
         for (File file : this.fileService.getAllFiles()){
             if (fileId.equals(file.getFileId())){
                 this.errorController.error("File was not deleted", model);
             }
         }
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
+        HomeController.updateHomeView(authentication, model, this.credentialService, this.noteService, this.fileService,
+                this.encryptionService, this.userService);
 
         return this.errorController.error("", model);
     }

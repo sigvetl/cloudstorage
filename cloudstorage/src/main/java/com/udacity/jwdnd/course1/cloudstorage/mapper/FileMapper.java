@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface FileMapper {
     @Select("SELECT * FROM FILES WHERE userid=#{userId}")
-    List<File> getFiles(Integer userId);
+    List<File> getAllFiles(Integer userId);
 
     @Select("SELECT * FROM files WHERE filename=#{filename} and userid=#{userId}")
     File getFile(String filename, Integer userId);

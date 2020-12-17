@@ -43,7 +43,7 @@ public class CredentialController {
         } else {
             this.credentialService.createCredential(credentialForm);
         }
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService,
+        HomeController.updateHomeView(authentication, model, this.credentialService, this.noteService,
                 this.fileService, this.encryptionService, this.userService);
 
 
@@ -63,7 +63,7 @@ public class CredentialController {
             }
         }
 
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
+        HomeController.updateHomeView(authentication, model, this.credentialService, this.noteService, this.fileService, this.encryptionService, this.userService);
 
         return errorController.error("", model);
     }

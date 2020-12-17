@@ -11,7 +11,7 @@ import java.util.List;
 public interface NoteMapper {
 
     @Select("SELECT * FROM notes WHERE userid=#{userId}")
-    List<Note> getNotes(Integer userId);
+    List<Note> getAllNotes(Integer userId);
 
     @Select("SELECT * FROM notes WHERE noteid=#{noteId}")
     Integer getNote(Note note);

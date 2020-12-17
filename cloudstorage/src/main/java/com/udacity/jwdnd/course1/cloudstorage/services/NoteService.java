@@ -64,7 +64,7 @@ public class NoteService {
     }
 
     public List<Note> getNotes() {
-        return noteMapper.getNotes(this.userId);
+        return noteMapper.getAllNotes(this.userId);
     }
 
     public void trackLoggedInUserId(String username) {

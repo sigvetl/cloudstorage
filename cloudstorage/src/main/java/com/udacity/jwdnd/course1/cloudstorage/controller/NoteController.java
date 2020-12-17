@@ -42,7 +42,7 @@ public class NoteController {
             this.noteService.createNote(noteForm);
         }
 
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService,
+        HomeController.updateHomeView(authentication, model, this.credentialService, this.noteService,
                 this.fileService, this.encryptionService, this.userService);
         if (this.noteService.compareTitle(noteForm.getNoteTitle())){
             return this.errorController.error("", model);
@@ -61,7 +61,7 @@ public class NoteController {
             }
         }
 
-        HomeController.getHomeDetails(authentication, model, this.credentialService, this.noteService,
+        HomeController.updateHomeView(authentication, model, this.credentialService, this.noteService,
                 this.fileService, this.encryptionService, this.userService);
 
         return this.errorController.error("", model);

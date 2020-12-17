@@ -48,7 +48,7 @@ public class FileService {
     }
 
     public List<File> getAllFiles(){
-        return this.fileMapper.getFiles(this.userId);
+        return this.fileMapper.getAllFiles(this.userId);
     }
 
     public void trackLoggedInUserId(String username){

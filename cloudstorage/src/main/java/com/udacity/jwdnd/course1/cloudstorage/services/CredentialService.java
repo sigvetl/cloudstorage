@@ -71,7 +71,7 @@ public class CredentialService {
     public boolean doesCredentialExist(CredentialForm credentialForm) {
         Credential credential = new Credential();
         credential.setCredentialId(credentialForm.getCredentialId());
-        Integer idReturned = this.credentialMapper.getCredentialById(credential);
+        Integer idReturned = this.credentialMapper.getCredentialId(credential);
 
         if (idReturned != null){
             return true;
@@ -90,7 +90,7 @@ public class CredentialService {
     }
 
     public List<Credential> getAllCredentials(){
-        return credentialMapper.getCredentials(this.userId);
+        return credentialMapper.getAllCredentials(this.userId);
     }
 
     public void trackLoggedInUserId(String username){
